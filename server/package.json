@@ -2,12 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.ts",
   "scripts": {
     "build": "npx tsc",
-    "start": "node build/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q build/index.js\""
+    "start": "npx nodemon",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q build/src/index.js\""
   },
   "keywords": [],
   "author": "",
