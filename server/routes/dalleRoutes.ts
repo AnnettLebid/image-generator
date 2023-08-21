@@ -1,5 +1,5 @@
 import express from "express";
-import { createPost } from "../controllers/post.js";
+import { createPost } from "../controllers/dalle.js";
 
 const router = express.Router();
 
