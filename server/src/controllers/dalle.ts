@@ -11,7 +11,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-export const createPost = async (req: Request, res: Response) => {
+export const generateImage = async (req: Request, res: Response) => {
   const { prompt } = req.body;
 
   if (!prompt) {

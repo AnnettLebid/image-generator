@@ -1,5 +1,5 @@
 import express from "express";
-import { createPost } from "../controllers/dalle.js";
+import { generateImage } from "../controllers/dalle.js";
 
 const router = express.Router();
 
@@ -7,6 +7,6 @@ router.route("/").get((req, res) => {
   res.send("Hello from dalle");
 });
 
-router.route("/").post(createPost);
+router.route("/").post(generateImage);
 
 export default router;

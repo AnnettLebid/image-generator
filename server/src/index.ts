@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./mongodb/connect.js";
@@ -15,9 +15,9 @@ app.use(express.json({ limit: "50mb" }));
 app.use("/api/v1/posts", postRoutes);
 app.use("/api/v1/dalle", dalleRoutes);
 
-app.get("/", async (req: Request, res: Response) => {
-  res.send("Hello World!");
-});
+// app.get("/", async (req: Request, res: Response) => {
+//   res.send("Hello World!");
+// });
 
 const startServer = async () => {
   try {
