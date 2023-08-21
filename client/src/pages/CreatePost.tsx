@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import { preview } from "../assets";
 import { getRandomPrompt } from "../utils";
@@ -25,11 +26,37 @@ export const CreatePost = () => {
 
   const handleSubmit = () => {};
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+  };
 
-  const handleSurpriseMe = () => {};
+  const handleSurpriseMe = () => {
+    const randomPrompt = getRandomPrompt(form.prompt);
+    setForm({ ...form, prompt: randomPrompt });
+  };
 
-  const generateImage = () => {};
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingInProgress(true);
+        const response = await axios.post(
+          "http://localhost:8080/api/v1/dalle",
+          { prompt: form.prompt },
+          { headers: { "Content-Type": "application/json" } }
+        );
+        setForm({
+          ...form,
+          photo: `data:image/jpeg;base64,${response.data.photo}`,
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setGeneratingInProgress(false);
+      }
+    } else {
+      alert("Please enter a prompt");
+    }
+  };
 
   return (
     <section className="max-w-7xl mx-auto">
