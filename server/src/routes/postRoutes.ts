@@ -3,10 +3,6 @@ import { createPost, getAllPosts } from "../controllers/posts.js";
 
 const router = express.Router();
 
-router.route("/").get((req, res) => {
-  res.send("Hello from dalle");
-});
-
-router.route("/").post(createPost);
+router.route("/").post(createPost).get(getAllPosts);
 
 export default router;
