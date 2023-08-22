@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { Loader, Card, FormField } from "../components";
 
 interface Post {
@@ -24,9 +25,25 @@ const RenderCards = ({ data, title }: { data: Post[]; title: string }) => {
 };
 
 export const Home = () => {
-  const [allPosds, setAllPosts] = useState(null);
+  const [allPosts, setAllPosts] = useState(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
+
+  useEffect(() => {
+    const getPosts = async () => {
+      setLoading(true);
+      try {
+        const posts = await axios.get("http://localhost:8080/api/v1/posts");      
+        setAllPosts(posts.data.reverse());
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getPosts();
+  }, []);
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -55,9 +72,9 @@ export const Home = () => {
             )}
             <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
               {searchText ? (
-                <RenderCards data={[]} title="No search results found" />
+                <RenderCards data={allPosts} title="No search results found" />
               ) : (
-                <RenderCards data={[]} title="No posts found" />
+                <RenderCards data={allPosts} title="No posts found" />
               )}
             </div>
           </>
