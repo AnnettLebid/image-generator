@@ -4,9 +4,10 @@ import axios from "axios";
 import { Loader, Card, FormField } from "../components";
 
 interface Post {
-  id: string;
-  title: string;
-  description: string;
+  _id: string;
+  name: string;
+  prompt: string;
+  photoUrl: string;
 }
 
 const RenderCards = ({ data, title }: { data: Post[]; title: string }) => {
@@ -14,7 +15,7 @@ const RenderCards = ({ data, title }: { data: Post[]; title: string }) => {
     return (
       <>
         {data.map((post) => (
-          <Card key={post.id} {...post} />
+          <Card key={post._id} {...post} />
         ))}
       </>
     );
@@ -33,7 +34,7 @@ export const Home = () => {
     const getPosts = async () => {
       setLoading(true);
       try {
-        const posts = await axios.get("http://localhost:8080/api/v1/posts");      
+        const posts = await axios.get("http://localhost:8080/api/v1/posts");
         setAllPosts(posts.data.reverse());
       } catch (error) {
         console.log(error);
