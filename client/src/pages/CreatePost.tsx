@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -24,7 +24,27 @@ export const CreatePost = () => {
     useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (form.prompt && form.photo) {
+      setLoading(true);
+      try {
+        await axios.post(
+          "http://localhost:8080/api/v1/posts",
+          { ...form },
+          { headers: { "Content-Type": "application/json" } }
+        );
+        navigate("/");
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert("please enter a prompt and generate an image");
+    }
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -124,7 +144,6 @@ export const CreatePost = () => {
           </p>
           <button
             type="submit"
-            onClick={generateImage}
             className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             {loading ? "Sharing..." : "Share with the community"}
