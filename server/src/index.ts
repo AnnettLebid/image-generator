@@ -15,10 +15,6 @@ app.use(express.json({ limit: "50mb" }));
 app.use("/api/v1/posts", postRoutes);
 app.use("/api/v1/dalle", dalleRoutes);
 
-// app.get("/", async (req: Request, res: Response) => {
-//   res.send("Hello World!");
-// });
-
 const startServer = async () => {
   try {
     await connectDB(`mongodb+srv://${process.env.MONGO_URI}`);
