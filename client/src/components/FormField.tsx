@@ -1,24 +1,23 @@
+import { useFormContext } from "react-hook-form";
 interface FormFieldProps {
   labelName: string;
   type: string;
   name: string;
   placeholder: string;
-  value: string;
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
+  handleChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isSurpriseMe?: boolean;
   handleSurpriseMe?: () => void;
 }
 
 export const FormField = ({
   labelName,
-  type,
   name,
   placeholder,
-  value,
-  handleChange,
   isSurpriseMe,
   handleSurpriseMe,
 }: FormFieldProps) => {
+  const { register } = useFormContext();
   return (
     <div>
       <div className="flex items-canter gap-2 mb-2">
@@ -39,14 +38,9 @@ export const FormField = ({
         )}
       </div>
       <input
-        type={type}
-        id={name}
-        name={name}
         placeholder={placeholder}
-        value={value}
-        onChange={handleChange}
-        required
         className="bg-gray-50 border bored-gray-300 text-gray-900  text-sm rounded-lg focus:ring-[#4649ff] focus:border-[#4649ff] outline-none block w-full p-3"
+        {...register(name, { required: "This field is required" })}
       />
     </div>
   );
