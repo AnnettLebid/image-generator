@@ -29,9 +29,12 @@ export const createPost = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllPosts = async (req: Request, res: Response) => {
+export const getPosts = async (req: Request, res: Response) => {
+  const page = parseInt((req.query.page as string) || "1");
+  const pageSize = parseInt((req.query.pageSize as string) || "10");
+  const skip = (page - 1) * pageSize;
   try {
-    const posts = await Post.find({});
+    const posts = await Post.find().skip(skip).limit(pageSize);    
     res.status(StatusCodes.OK).json(posts);
   } catch (error) {
     console.log(error);
