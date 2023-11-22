@@ -4,7 +4,7 @@ import { isRouteErrorResponse, useNavigate } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import axios from "axios";
 
-import { preview } from "../assets";
+import { preview, sorry_smile } from "../assets";
 import { getRandomPrompt } from "../utils";
 import { FormField, Loader } from "../components";
 
@@ -21,9 +21,6 @@ export const CreatePost = () => {
     formState: { errors },
   } = methods;
 
-  console.log("errors", errors);
-
-  console.log("watch", methods.watch());
   const [form, setForm] = useState<formInterface>({
     name: "",
     prompt: "",
@@ -63,7 +60,6 @@ export const CreatePost = () => {
   // };
 
   const onSubmit = async (data: any) => {
-    console.log("onSub,it");
     try {
       setGeneratingInProgress(true);
       const response = await axios.post(
@@ -76,8 +72,7 @@ export const CreatePost = () => {
         photo: `data:image/jpeg;base64,${response.data.photo}`,
       });
     } catch (error) {
-      console.log(error);
-      setError(error.message);
+      setError(error.response.data.error.message || error.message);
     } finally {
       setGeneratingInProgress(false);
     }
@@ -126,11 +121,17 @@ export const CreatePost = () => {
             </div>
             {error && (
               <div>
-                <p className="text-red-500">{error}</p>
+                <p className="text-red-500">{`Sorry, ${error}`}</p>
               </div>
             )}
             <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center">
-              {form.photo ? (
+              {error ? (
+                <img
+                  src={sorry_smile}
+                  alt={form.prompt}
+                  className="w-full h-full object-contain opacity-40"
+                />
+              ) : form.photo ? (
                 <img
                   src={form.photo}
                   alt={form.prompt}
@@ -143,6 +144,7 @@ export const CreatePost = () => {
                   className="w-9/12 h-9/12 object-contain opacity-40"
                 />
               )}
+
               {generatingInProgress && (
                 <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
                   <Loader />
