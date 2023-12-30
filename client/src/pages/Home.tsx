@@ -22,6 +22,7 @@ export const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isError, setIsError] = useState("");
   const [page, setPage] = useState(1);
+  const nextPageRef = useRef<boolean>(null);
 
   const nextPage = () => {
     setPage((prevPage) => prevPage + 1);
@@ -29,9 +30,10 @@ export const Home = () => {
 
   useEffect(() => {
     console.log("mounted, getting posts");
-    getPosts(`${BASE_URL}`, page).then((data) =>
-      setPosts((prevPosts) => [...prevPosts, ...data.posts])
-    );
+    getPosts(`${BASE_URL}`, page).then(({ posts, isNextPage }) => {
+      setPosts((prevPosts) => [...prevPosts, ...posts]);
+      nextPageRef.current = isNextPage;
+    });
   }, [page]);
 
   return (
@@ -67,7 +69,7 @@ export const Home = () => {
                     key={post._id}
                     {...post}
                     isLast={index === posts.length - 1}
-                    nextPage={nextPage}
+                    nextPage={nextPageRef.current ? nextPage : null}
                   />
                 );
               })}

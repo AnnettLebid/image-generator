@@ -14,24 +14,17 @@ interface CardProps {
 
 export const Card = forwardRef(
   ({ _id, name, prompt, photoUrl, isLast, nextPage }: CardProps, ref: any) => {
-    if (isLast) {
-      console.log(_id, "is last");
-    }
     const imageRef = useRef();
+    const cardObserverEntry = useObserver(imageRef, { rootMargin: "100px" });
+
     useEffect(() => {
-      if (!imageRef?.current) return;
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (isLast && entry.isIntersecting) {
-            console.log("visible");
-            nextPage();
-            observer.unobserve(entry.target);
-          }
-        },
-        { rootMargin: "100px" }
-      );
-      observer.observe(imageRef.current);
-    }, [imageRef, isLast]);
+      if (!cardObserverEntry || !nextPage) return;
+      if (isLast && cardObserverEntry.isIntersecting) {
+        console.log("visible");
+        nextPage();
+      }
+    }, [cardObserverEntry, isLast]);
+
     return (
       <div className="rounded-xl group relative shadow-card hover:shadow-cardhover card min-h-5">
         <img
