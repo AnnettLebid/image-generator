@@ -20,7 +20,6 @@ export const Card = forwardRef(
     useEffect(() => {
       if (!cardObserverEntry || !nextPage) return;
       if (isLast && cardObserverEntry.isIntersecting) {
-        console.log("visible");
         nextPage();
       }
     }, [cardObserverEntry, isLast]);

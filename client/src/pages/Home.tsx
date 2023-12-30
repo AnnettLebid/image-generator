@@ -14,27 +14,27 @@ interface Post {
   photoUrl: string;
 }
 
-const BASE_URL = "http://localhost:8080/api/v1/posts";
-
-const limit = 10;
-
 export const Home = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isError, setIsError] = useState("");
   const [page, setPage] = useState(1);
-  const nextPageRef = useRef<boolean>(null);
+  const {
+    isLoading,
+    isError,
+    error,
+    results: posts,
+    hasNextPage,
+  } = usePosts(page);
 
   const nextPage = () => {
     setPage((prevPage) => prevPage + 1);
   };
 
-  useEffect(() => {
-    console.log("mounted, getting posts");
-    getPosts(`${BASE_URL}`, page).then(({ posts, isNextPage }) => {
-      setPosts((prevPosts) => [...prevPosts, ...posts]);
-      nextPageRef.current = isNextPage;
-    });
-  }, [page]);
+  // useEffect(() => {
+  //   console.log("mounted, getting posts");
+  //   getPosts(`${BASE_URL}`, page).then(({ posts, isNextPage }) => {
+  //     setPosts((prevPosts) => [...prevPosts, ...posts]);
+  //     nextPageRef.current = isNextPage;
+  //   });
+  // }, [page]);
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -49,7 +49,7 @@ export const Home = () => {
       </div>
       <div className="mt-16">{/* <FormField /> */}</div>
       <div className="mt-10">
-        {isError ? <div>Oh, no.{isError}</div> : null}
+        {isError ? <div>Oh, no.{error.message}</div> : null}
         <>
           {/* {searchText && (
               <h2 className="font-medium text-[#666e75] text-xl mb-3">
@@ -69,7 +69,7 @@ export const Home = () => {
                     key={post._id}
                     {...post}
                     isLast={index === posts.length - 1}
-                    nextPage={nextPageRef.current ? nextPage : null}
+                    nextPage={hasNextPage ? nextPage : null}
                   />
                 );
               })}
