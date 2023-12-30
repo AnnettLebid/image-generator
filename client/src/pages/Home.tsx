@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback, createRef } from "react";
 import axios from "axios";
 import { Loader, Card, FormField } from "../components";
+import BlurImage from "../components/BlurImage";
+import usePosts from "../hooks/usePosts";
+import { set } from "react-hook-form";
+import { getPosts } from "../utils";
 
 interface Post {
   _id: string;
@@ -10,41 +14,25 @@ interface Post {
   photoUrl: string;
 }
 
-const RenderCards = ({ data, title }: { data: Post[]; title: string }) => {
-  if (data?.length > 0) {
-    return (
-      <>
-        {data.map((post) => (
-          <Card key={post._id} {...post} />
-        ))}
-      </>
-    );
-  }
-  return (
-    <h2 className="mt-5 font-bold text-[#6449ff] text-xl uppercase">{title}</h2>
-  );
-};
+const BASE_URL = "http://localhost:8080/api/v1/posts";
+
+const limit = 10;
 
 export const Home = () => {
-  const [allPosts, setAllPosts] = useState(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [searchText, setSearchText] = useState<string>("");
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isError, setIsError] = useState("");
+  const [page, setPage] = useState(1);
+
+  const nextPage = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
 
   useEffect(() => {
-    const getPosts = async () => {
-      setLoading(true);
-      try {
-        const posts = await axios.get("http://localhost:8080/api/v1/posts");
-        setAllPosts(posts.data.reverse());
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getPosts();
-  }, []);
+    console.log("mounted, getting posts");
+    getPosts(`${BASE_URL}`, page).then((data) =>
+      setPosts((prevPosts) => [...prevPosts, ...data.posts])
+    );
+  }, [page]);
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -59,27 +47,52 @@ export const Home = () => {
       </div>
       <div className="mt-16">{/* <FormField /> */}</div>
       <div className="mt-10">
-        {loading ? (
-          <div className="flex justify-center items-center">
-            <Loader />
-          </div>
-        ) : (
-          <>
-            {searchText && (
+        {isError ? <div>Oh, no.{isError}</div> : null}
+        <>
+          {/* {searchText && (
               <h2 className="font-medium text-[#666e75] text-xl mb-3">
                 Showing results for
                 <span className="text-[#222328]">{searchText}</span>
               </h2>
-            )}
-            <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
-              {searchText ? (
+            )} */}
+          <div>
+            {/* {searchText ? (
                 <RenderCards data={allPosts} title="No search results found" />
               ) : (
-                <RenderCards data={allPosts} title="No posts found" />
-              )}
+                <> */}
+            <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
+              {posts.map((post, index) => {
+                return (
+                  <Card
+                    key={post._id}
+                    {...post}
+                    isLast={index === posts.length - 1}
+                    nextPage={nextPage}
+                  />
+                );
+              })}
+
+              {/* {isLoading && (
+                <div>
+                  {Array.from({ length: limit }, (_, index) => index).map(
+                    (n) => {
+                      return (
+                        <div
+                          key={n}
+                          className="w-full h-60 bg-slate-200 rounded-xl p-10 flex justify-center items-center  border-4 border-red-800 text-gray-400 animate-pulse"
+                        >
+                          Loading...
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              )} */}
             </div>
-          </>
-        )}
+            {/* </>
+              )} */}
+          </div>
+        </>
       </div>
     </section>
   );
